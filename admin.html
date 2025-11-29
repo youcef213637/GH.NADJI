@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة الإدارة</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>📦 الطلبات</h2>
+  <div id="adminLogin">
+    <input type="password" id="adminPass" placeholder="كلمة مرور الإدارة">
+    <button id="adminEnter">دخول</button>
+  </div>
+  <div id="orders" class="hidden"></div>
+
+  <script>
+    const ADMIN_PASSWORD = '123456';
+
+    document.getElementById('adminEnter').addEventListener('click', () => {
+      const pass = document.getElementById('adminPass').value;
+      if (pass !== ADMIN_PASSWORD) {
+        alert('❌ كلمة المرور غير صحيحة');
+        return;
+      }
+      document.getElementById('adminLogin').classList.add('hidden');
+      loadOrders();
+    });
+
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const container = document.getElementById('orders');
+      container.classList.remove('hidden');
+
+      if (orders.length === 0) {
+        container.innerHTML = '<p>لا توجد طلبات حالياً</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      orders.forEach((order, idx) => {
+        container.innerHTML += `
+          <div>
+            <h3>طلب #${idx + 1}</h3>
+            👤 ${order.customer.name} — 📧 ${order.customer.email}<br>
+            📞 ${order.customer.phone || '-'} — 📍 ${order.customer.address || '-'}<br>
+            <ul>
+              ${order.items.map(i => `<li>${i.name} × ${i.quantity} — ${i.price} دج</li>`).join('')}
+            </ul>
+            <strong>الإجمالي:</strong> ${order.total} دج<br>
+            📅 ${order.date}
+            <hr>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
